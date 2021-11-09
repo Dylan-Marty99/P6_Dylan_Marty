@@ -1,11 +1,13 @@
 const multer = require("multer");
 
+//------ Formats d'images --------
 const MIME_TYPES = {
   "image/jpg": "jpg",
   "image/jpeg": "jpg",
   "image/png": "png",
 };
 
+//-------- Emplacement d'enregistrement et nom du fichier ---------
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
     callback(null, "images");

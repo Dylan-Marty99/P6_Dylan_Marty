@@ -9,6 +9,7 @@ const path = require("path");
 
 const app = express();
 
+//----------- Gestion des CORS ----------------
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader(
@@ -22,6 +23,7 @@ app.use((req, res, next) => {
   next();
 });
 
+//------------ Connection à la base de données MongoDB ----------------
 mongoose
   .connect(
     "mongodb+srv://DyMty:mongodbusermarty@cluster0.bhvbh.mongodb.net/test?retryWrites=true&w=majority",
@@ -32,6 +34,7 @@ mongoose
 
 app.use(bodyParser.json());
 
+//------- Gestion des images et des routes de l'API -------
 app.use("/images", express.static(path.join(__dirname, "images")));
 app.use("/api/sauces", saucesRoutes);
 app.use("/api/auth", userRoutes);

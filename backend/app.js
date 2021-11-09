@@ -1,13 +1,26 @@
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
-
-const saucesRoutes = require("./routes/sauces");
-const userRoutes = require("./routes/user");
-
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
 const path = require("path");
 
 const app = express();
+
+//------- Importation des routes ---------
+const saucesRoutes = require("./routes/sauces");
+const userRoutes = require("./routes/user");
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 50, // limite chaque IP à 50 requêtes
+  message: "Trop de requêtes éffectuées depuis cette IP",
+});
+
+// Helmet protége l'application de certaines des vulnérabilités bien connues du Web en configurant de manière appropriée des en-têtes HTTP.
+app.use(helmet());
+
+app.use(limiter);
 
 //----------- Gestion des CORS ----------------
 app.use((req, res, next) => {

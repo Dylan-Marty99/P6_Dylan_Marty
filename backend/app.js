@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -36,12 +38,16 @@ app.use((req, res, next) => {
   next();
 });
 
-//------------ Connection à la base de données MongoDB ----------------
+//------------ Connection à la base de données MongoDB et masquage de l'ID, du MDP et de l'ADDRESS ----------------
+const ID = process.env.ID;
+const MDP = process.env.MDP;
+const ADDRESS = process.env.ADDRESS;
+
 mongoose
-  .connect(
-    "mongodb+srv://DyMty:mongodbusermarty@cluster0.bhvbh.mongodb.net/test?retryWrites=true&w=majority",
-    { useNewUrlParser: true, useUnifiedTopology: true }
-  )
+  .connect(`mongodb+srv://${ID}:${MDP}@${ADDRESS}`, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
   .then(() => console.log("Connexion à MongoDB réussie !"))
   .catch(() => console.log("Connexion à MongoDB échouée !"));
 

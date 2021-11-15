@@ -78,3 +78,90 @@ exports.getAllSauces = (req, res, next) => {
 };
 
 //----------- Liker ou disliker une sauce ----------------
+exports.likeSauce = (req, res, next) => {
+  switch (req.body.like) {
+    //--- Vérifier si l'utilisateur à liker ou disliker la sauce ------
+    case 0:
+      Sauces.findOne({ _id: req.params.id })
+        .then((sauces) => {
+          if (sauces.usersLiked.find((user) => user === req.body.userId)) {
+            Sauces.updateOne(
+              { _id: req.params.id },
+              {
+                $inc: { likes: -1 },
+                $pull: { usersLiked: req.body.userId },
+                _id: req.params.id,
+              }
+            )
+              .then(() => {
+                res
+                  .status(201)
+                  .json({ message: "Le nouvel avis a été pris en compte!" });
+              })
+              .catch((error) => {
+                res.status(400).json({ error: error });
+              });
+          }
+          if (sauces.usersDisliked.find((user) => user === req.body.userId)) {
+            Sauces.updateOne(
+              { _id: req.params.id },
+              {
+                $inc: { dislikes: -1 },
+                $pull: { usersDisliked: req.body.userId },
+                _id: req.params.id,
+              }
+            )
+              .then(() => {
+                res
+                  .status(201)
+                  .json({ message: "Le nouvel avis a été pris en compte!" });
+              })
+              .catch((error) => {
+                res.status(400).json({ error: error });
+              });
+          }
+        })
+        .catch((error) => {
+          res.status(404).json({ error: error });
+        });
+      break;
+
+    //---------- Like de la sauce ----------
+    case 1:
+      Sauces.updateOne(
+        { _id: req.params.id },
+        {
+          $inc: { likes: 1 },
+          $push: { usersLiked: req.body.userId },
+          _id: req.params.id,
+        }
+      )
+        .then(() => {
+          res.status(201).json({ message: "Like bien pris en compte!" });
+        })
+        .catch((error) => {
+          res.status(400).json({ error: error });
+        });
+      break;
+
+    //---------- Dislike de la sauce ----------
+    case -1:
+      Sauces.updateOne(
+        { _id: req.params.id },
+        {
+          $inc: { dislikes: 1 },
+          $push: { usersDisliked: req.body.userId },
+          _id: req.params.id,
+        }
+      )
+        .then(() => {
+          res.status(201).json({ message: "Dislike bien pris en compte!" });
+        })
+        .catch((error) => {
+          res.status(400).json({ error: error });
+        });
+      break;
+    default:
+      console.error("Mauvaise requête");
+  }
+};
